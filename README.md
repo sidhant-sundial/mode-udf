@@ -1,4 +1,4 @@
-# trino-encrypt-udfs
+# trino-mode
 
 Example of Trino UDFs Plugin to encrypt and decrypt values with a password.
 
@@ -15,10 +15,6 @@ Details on [Java implementation](https://www.javamex.com/tutorials/cryptography/
 
 ## Build
 
-### requires
-* Java 11
-* Maven 4.0.0+ (for building)
-
 ```
 mvn clean package
 ```
@@ -28,49 +24,27 @@ If you want skip unit tests, please run:
 mvn clean package -DskipTests
 ```
 
-It will generate a **trino-encrypt-udfs-{version}.jar** and **trino-encrypt-udfs-{version}** folder in target directory.
+It will generate a **trino-mode-{version}.jar** and **trino-mode-{version}** folder in target directory.
    
 ## Deploy
 
-Copy the **trino-encrypt-udfs-{version}** folder from **target** directory in your Trino **plugin** directory and restart Trino server.
+Copy the **trino-mode-{version}** folder from **target** directory in your Trino **plugin** directory and restart Trino server.
    
 ```bash
-% cp -R ./target/trino-encrypt-udfs-{version} <trino-server-folder>/plugin/trino-encrypt-udfs
+% cp -R ./target/trino-mode-{version} <trino-server-folder>/plugin/trino-mode
 
 % <trino-server-folder>/bin/launcher restart
 ```
 
-Then you should find 2 new functions **encrypt** and **decrypt** if you list all available functions of your Trino server with **SHOW FUNCTIONS** SQL command:
+Then you should find 1 new function **mode0** if you list all available functions of your Trino server with **SHOW FUNCTIONS** SQL command:
 ``` 
-"encrypt","varchar","varchar, varchar","scalar","true","UDF to encrypt a value with a given password"
+"mode","varchar","varchar, varchar","scalar","true","UDF to find mode given a set of values"
 
-"decrypt","varchar","varchar, varchar","scalar","true","UDF to decrypt a value with a given password"
+
 ``` 
 ## Usage
 
 With a local trino server and trino CLI you can test the UDFs with:
 ``` 
-%<trino-cli-folder>/trino --execute "SELECT encrypt('myvalue','mypassword')"
+%<trino-cli-folder>/trino --execute "SELECT mode([1,2,3,4])"
 ```
-
-SQL queries to use and test functions:
-
-```
-SELECT decrypt(encrypt('myvalue','mypassword'),'mypassword')
-
-SELECT decrypt(encrypt('myvalue','mypassword'),'my_new_password')
-```
-With last query you must get the message ``"Wrong password for decryption"``.
-
-
-Tests on a tpch table:
-```
-SELECT encrypt(name,'new_password') FROM tpch.sf1.region
-```
-To create a table with encrypted data:
-
-```
-CREATE TABLE your_catalog.your_schema.region_encrypt AS SELECT encrypt(name,'new_password') FROM tpch.sf1.region
-```
-
-![Trino udfs queries](https://github.com/victorcouste/trino-encrypt-udfs/blob/main/queries.png?raw=true)

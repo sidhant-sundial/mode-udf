@@ -7,8 +7,8 @@
         <version>364</version>
     </parent>
 
-    <artifactId>trino-encrypt-udfs</artifactId>
-    <description>Sample Trino UDF to encrypt and decrypt values</description>
+    <artifactId>trino-mode</artifactId>
+    <description>Sample Trino UDF to compute mode for an array of values</description>
     <packaging>trino-plugin</packaging>
 
     <dependencies>

@@ -19,16 +19,8 @@ import io.trino.spi.function.ScalarFunction;
 import io.trino.spi.function.SqlNullable;
 import io.trino.spi.function.SqlType;
 
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
-import javax.crypto.spec.PBEParameterSpec;
+import java.util.HashMap;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-
-import static io.airlift.slice.Slices.utf8Slice;
 import static io.trino.spi.type.StandardTypes.BIGINT;
 
 //import io.trino.spi.TrinoException;
@@ -36,7 +28,6 @@ import static io.trino.spi.type.StandardTypes.BIGINT;
 
 public final class Mode
 {
-    public static byte[] salt = {-34, 51, 16, 18, -34, 51, 16, 18};
 
     private Mode()
     {}
@@ -44,63 +35,35 @@ public final class Mode
     @Description("UDF to calculate mode of a given array of numbers")
     @ScalarFunction("mode")
     @SqlType()
-    public static Slice encrypt(
+    public static Slice mode(
             @SqlNullable @SqlType(BIGINT) Slice value,
             @SqlType(BIGINT) Slice password)
     {
-        return utf8Slice(Mode.encrypt_str(value.toStringUtf8(), password.toStringUtf8()));
+         return null;
     }
 
-    @Description("UDF to decrypt a value with a given password")
-    @ScalarFunction("decrypt")
-    @SqlType(BIGINT)
-    public static Slice decrypt(
-            @SqlNullable @SqlType(BIGINT) Slice value,
-            @SqlType(BIGINT) Slice password)
-    {
-        return utf8Slice(Mode.decrypt_str(value.toStringUtf8(), password.toStringUtf8()));
-    }
 
-    //PBE stands for "Password Based Encryption", a method where the encryption key (which is binary data) is derived from a password (string).
-    //PBE is using an encryption key generated from a password, random salt and number of iterations
-
-    private static String encrypt_str(String value, String password)
+    public static int mode(int []array)
     {
-        try {
-            SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("PBEWithMD5AndDES");
-            SecretKey key = keyFactory.generateSecret(new PBEKeySpec(password.toCharArray()));
-            Cipher pbeCipher = Cipher.getInstance("PBEWithMD5AndDES");
-            pbeCipher.init(1, key, new PBEParameterSpec(salt, 20));
-            return base64Encode(pbeCipher.doFinal(value.getBytes(StandardCharsets.UTF_8)));
+        HashMap<Integer,Integer> hm = new HashMap<Integer,Integer>();
+        int max  = 1;
+        int temp = 0;
+
+        for (int j : array) {
+
+            if (hm.get(j) != null) {
+
+                int count = hm.get(j);
+                count++;
+                hm.put(j, count);
+
+                if (count > max) {
+                    max = count;
+                    temp = j;
+                }
+            } else
+                hm.put(j, 1);
         }
-        catch (Throwable t) {
-            //throw new TrinoException(GENERIC_INTERNAL_ERROR, t);
-            return t.getMessage();
-        }
-    }
-
-    private static String decrypt_str(String value, String password)
-    {
-        try {
-            SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("PBEWithMD5AndDES");
-            SecretKey key = keyFactory.generateSecret(new PBEKeySpec(password.toCharArray()));
-            Cipher pbeCipher = Cipher.getInstance("PBEWithMD5AndDES");
-            pbeCipher.init(2, key, new PBEParameterSpec(salt, 20));
-            return new String(pbeCipher.doFinal(base64Decode(value)), StandardCharsets.UTF_8);
-        }
-        catch (Throwable t) {
-            //throw new TrinoException(GENERIC_INTERNAL_ERROR, t);
-            return "Wrong password for decryption";
-        }
-    }
-
-    private static String base64Encode(byte[] bytes)
-    {
-        return Base64.getMimeEncoder().encodeToString(bytes);
-    }
-
-    private static byte[] base64Decode(String property)
-    {
-        return Base64.getMimeDecoder().decode(property);
+        return temp;
     }
 }

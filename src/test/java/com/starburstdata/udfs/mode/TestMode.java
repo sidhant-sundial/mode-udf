@@ -17,9 +17,9 @@ import io.trino.operator.scalar.AbstractTestFunctions;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import static io.trino.spi.type.VarcharType.VARCHAR;
+import static io.trino.spi.type.BigintType.BIGINT;
 
-public class TestEncrypt
+public class TestMode
         extends AbstractTestFunctions
 {
     @BeforeClass
@@ -30,9 +30,8 @@ public class TestEncrypt
     }
 
     @Test
-    public void testEncrypt()
+    public void testMode()
     {
-        assertFunction("encrypt('myvalue','mypassword')", VARCHAR, "/stEnUn+cUs=");
-        assertFunction("decrypt('/stEnUn+cUs=','mypassword')", VARCHAR, "myvalue");
+        assertFunction("mode([1,2,2,3,4])", BIGINT, 2);
     }
 }
