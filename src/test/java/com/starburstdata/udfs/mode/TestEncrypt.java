@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.starburstdata.udfs.encrypt;
+package com.starburstdata.udfs.mode;
 
 import io.trino.operator.scalar.AbstractTestFunctions;
 import org.testng.annotations.BeforeClass;
@@ -26,7 +26,7 @@ public class TestEncrypt
     public void setUp()
             throws Exception
     {
-        registerScalar(EncryptDecrypt.class);
+        registerScalar(Mode.class);
     }
 
     @Test

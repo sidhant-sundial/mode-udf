@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.starburstdata.udfs.encrypt;
+package com.starburstdata.udfs.mode;
 
 import io.airlift.slice.Slice;
 import io.trino.spi.function.Description;
@@ -29,36 +29,36 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 import static io.airlift.slice.Slices.utf8Slice;
-import static io.trino.spi.type.StandardTypes.VARCHAR;
+import static io.trino.spi.type.StandardTypes.BIGINT;
 
 //import io.trino.spi.TrinoException;
 //import static io.trino.spi.StandardErrorCode.GENERIC_INTERNAL_ERROR;
 
-public final class EncryptDecrypt
+public final class Mode
 {
     public static byte[] salt = {-34, 51, 16, 18, -34, 51, 16, 18};
 
-    private EncryptDecrypt()
+    private Mode()
     {}
 
-    @Description("UDF to encrypt a value with a given password")
-    @ScalarFunction("encrypt")
-    @SqlType(VARCHAR)
+    @Description("UDF to calculate mode of a given array of numbers")
+    @ScalarFunction("mode")
+    @SqlType()
     public static Slice encrypt(
-                @SqlNullable @SqlType(VARCHAR) Slice value,
-                @SqlType(VARCHAR) Slice password)
+            @SqlNullable @SqlType(BIGINT) Slice value,
+            @SqlType(BIGINT) Slice password)
     {
-        return utf8Slice(EncryptDecrypt.encrypt_str(value.toStringUtf8(), password.toStringUtf8()));
+        return utf8Slice(Mode.encrypt_str(value.toStringUtf8(), password.toStringUtf8()));
     }
 
     @Description("UDF to decrypt a value with a given password")
     @ScalarFunction("decrypt")
-    @SqlType(VARCHAR)
+    @SqlType(BIGINT)
     public static Slice decrypt(
-                @SqlNullable @SqlType(VARCHAR) Slice value,
-                @SqlType(VARCHAR) Slice password)
+            @SqlNullable @SqlType(BIGINT) Slice value,
+            @SqlType(BIGINT) Slice password)
     {
-        return utf8Slice(EncryptDecrypt.decrypt_str(value.toStringUtf8(), password.toStringUtf8()));
+        return utf8Slice(Mode.decrypt_str(value.toStringUtf8(), password.toStringUtf8()));
     }
 
     //PBE stands for "Password Based Encryption", a method where the encryption key (which is binary data) is derived from a password (string).

@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.starburstdata.udfs.encrypt;
+package com.starburstdata.udfs.mode;
 
 import com.google.common.collect.ImmutableSet;
 import io.trino.spi.Plugin;
@@ -25,7 +25,7 @@ public class UDFsPlugin
     public Set<Class<?>> getFunctions()
     {
         return ImmutableSet.<Class<?>>builder()
-                .add(EncryptDecrypt.class)
+                .add(Mode.class)
                 .build();
     }
 }
